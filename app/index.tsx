@@ -1,9 +1,9 @@
-import Modal from "@/components/Modal";
-import TodoBox from "@/components/TodoBox";
-import { getTodos, initialize } from "@/utils/AsyncStorage";
-import { usePathname } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import Modal from "@/components/Modal"
+import TodoBox from "@/components/TodoBox"
+import { getTodos, initialize } from "@/utils/AsyncStorage"
+import { usePathname } from "expo-router"
+import { useCallback, useEffect, useState } from "react"
+import { Pressable, ScrollView, Text, View } from "react-native"
 
 export type Todo = {
   id: string
@@ -13,7 +13,7 @@ export type Todo = {
   updatedAt: Date
   finishBy: Date
   completedAt: Date | null
-  status : boolean
+  status: boolean
 }
 
 export default function Index() {
@@ -36,7 +36,7 @@ export default function Index() {
     refresh()
   }, [pathname])
 
-  const refresh =useCallback( async () => {
+  const refresh = useCallback(async () => {
     await initialize()
     await fetchData()
   }, [])
@@ -48,76 +48,97 @@ export default function Index() {
   return (
     <View
       style={{
-          flex: 1,
-          justifyContent: "flex-start",
-          alignItems: "stretch",
-          padding: 10,
-        }}
+        flex: 1,
+        justifyContent: "flex-start",
+        alignItems: "stretch",
+        padding: 10,
+      }}
     >
       {visible && <Modal setVisible={setVisible} />}
-        <ScrollView
-        onScrollBeginDrag={()=>{setIsScrolling(true)}}
-        onScrollEndDrag={()=>{setIsScrolling(false)}}
-        onMomentumScrollEnd={()=>{setIsScrolling(false)}}
+      <ScrollView
+        onScrollBeginDrag={() => {
+          setIsScrolling(true)
+        }}
+        onScrollEndDrag={() => {
+          setIsScrolling(false)
+        }}
+        onMomentumScrollEnd={() => {
+          setIsScrolling(false)
+        }}
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: 10
-        }}>
-          {todo && todo.length > 0 ? (
-            [
-              ...todo.filter((e: Todo) => !e.status).map((e: Todo) => (
-                <TodoBox todo={e} key={e.id} refresh={refresh} isScrolling={isScrolling}/>
+          gap: 10,
+        }}
+      >
+        {todo && todo.length > 0 ? (
+          [
+            ...todo
+              .filter((e: Todo) => !e.status)
+              .map((e: Todo) => (
+                <TodoBox
+                  todo={e}
+                  key={e.id}
+                  refresh={refresh}
+                  isScrolling={isScrolling}
+                />
               )),
-              ...todo.filter((e: Todo) => e.status).map((e: Todo) => (
-                <TodoBox todo={e} key={e.id} refresh={refresh} isScrolling={isScrolling}/>
-              ))
-            ]
-          ) : (
-            <Text>No Todos Found</Text>
-          )}
-        </ScrollView>
+            ...todo
+              .filter((e: Todo) => e.status)
+              .map((e: Todo) => (
+                <TodoBox
+                  todo={e}
+                  key={e.id}
+                  refresh={refresh}
+                  isScrolling={isScrolling}
+                />
+              )),
+          ]
+        ) : (
+          <Text>No Todos Found</Text>
+        )}
+      </ScrollView>
 
-        {!visible && (
-          <Pressable
+      {!visible && (
+        <Pressable
+          style={{
+            width: 70,
+            height: 70,
+            backgroundColor: "rgb(0, 53, 198)",
+            borderRadius: 40,
+            position: "absolute",
+            right: 20,
+            bottom: 20,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            // ios
+            shadowColor: "#000",
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+
+            // android
+            elevation: 3,
+          }}
+          onPressOut={() => {
+            setVisible((x) => !x)
+          }}
+        >
+          <Text
             style={{
-              width: 70,
-              height: 70,
-              backgroundColor: "rgb(0, 53, 198)",
-              borderRadius: 40,
-              position: "absolute",
-              right: 20,
-              bottom: 20,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              // ios
-              shadowColor: "#000",
-              shadowOffset: {
-                width: 0,
-                height: 2,
-              },
-              shadowOpacity: 0.25,
-              shadowRadius: 3.84,
-
-              // android
-              elevation: 3,
-            }}
-            onPressOut={() => {
-              setVisible((x) => !x)
+              fontSize: 35,
+              fontWeight: "400",
+              color: "rgb(255, 255, 255)",
             }}
           >
-            <Text
-              style={{
-                fontSize: 35,
-                fontWeight: "400",
-                color: "rgb(255, 255, 255)",
-              }}
-            >
-              +
-            </Text>
-          </Pressable>
-        )}
+            +
+          </Text>
+        </Pressable>
+      )}
     </View>
   )
 }

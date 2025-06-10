@@ -39,7 +39,7 @@ export async function initialize() {
     if (data) {
       cachedData = JSON.parse(data)
       cachedData.map((todo) => {
-        if(todo.completedAt) todo.completedAt = new Date(todo.completedAt)
+        if (todo.completedAt) todo.completedAt = new Date(todo.completedAt)
         todo.createdAt = new Date(todo.createdAt)
         todo.finishBy = new Date(todo.finishBy)
         todo.updatedAt = new Date(todo.updatedAt)
@@ -77,16 +77,16 @@ export async function dev_PRINT_DATA() {
 }
 
 export async function getTodoID(id: string) {
-    const res = cachedData.find((todo: Todo)=>{
-        return todo.id === id
-    })
-    return res
+  const res = cachedData.find((todo: Todo) => {
+    return todo.id === id
+  })
+  return res
 }
 
 export async function updateTodoID(id: string, newTodo: Todo) {
-    const index = cachedData.findIndex((todo: Todo) => todo.id === id)
-    if (index !== -1) {
-        cachedData[index] = newTodo
-        await AsyncStorage.setItem(key, JSON.stringify(cachedData))
-    }
+  const index = cachedData.findIndex((todo: Todo) => todo.id === id)
+  if (index !== -1) {
+    cachedData[index] = newTodo
+    await AsyncStorage.setItem(key, JSON.stringify(cachedData))
+  }
 }

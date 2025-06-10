@@ -9,7 +9,7 @@ import { useRouter } from "expo-router"
 const TodoBox = ({
   todo,
   refresh,
-  isScrolling
+  isScrolling,
 }: {
   todo: Todo
   refresh: () => Promise<void>
@@ -37,7 +37,7 @@ const TodoBox = ({
 
   return (
     <Pressable
-    disabled={isScrolling}
+      disabled={isScrolling}
       onPress={handlePress}
       onLongPress={handleUpdate}
       style={{
@@ -85,30 +85,34 @@ const TodoBox = ({
               fontWeight: "700",
               fontSize: 18,
               color: "rgb(41, 41, 41)",
-              textDecorationLine: todo.status ? 'line-through' : "none"
+              textDecorationLine: todo.status ? "line-through" : "none",
             }}
           >
             {todo.name}
           </Text>
-          {!todo.status && <Text
-            style={{
-              fontSize: 13,
-              color: "rgb(97, 97, 97)",
-            }}
-          >
-            {todo.info.length > 30
-              ? todo.info.substring(0, 30) + "..."
-              : todo.info}
-          </Text>}
-          {!todo.status && <Text
-            style={{
-              fontSize: 10,
-              color: "rgb(151, 151, 151)",
-            }}
-          >
-            {todo.finishBy.toLocaleString("default", { timeStyle: "short" })},{" "}
-            {todo.finishBy.toLocaleString("default", { dateStyle: "long" })}
-          </Text>}
+          {!todo.status && (
+            <Text
+              style={{
+                fontSize: 13,
+                color: "rgb(97, 97, 97)",
+              }}
+            >
+              {todo.info.length > 30
+                ? todo.info.substring(0, 30) + "..."
+                : todo.info}
+            </Text>
+          )}
+          {!todo.status && (
+            <Text
+              style={{
+                fontSize: 10,
+                color: "rgb(151, 151, 151)",
+              }}
+            >
+              {todo.finishBy.toLocaleString("default", { timeStyle: "short" })},{" "}
+              {todo.finishBy.toLocaleString("default", { dateStyle: "long" })}
+            </Text>
+          )}
         </View>
       </View>
       <Pressable

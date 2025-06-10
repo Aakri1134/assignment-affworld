@@ -1,6 +1,6 @@
-import { Todo } from '@/app'
-import { storeTodo } from '@/utils/AsyncStorage'
-import DateTimePicker from '@react-native-community/datetimepicker'
+import { Todo } from "@/app"
+import { storeTodo } from "@/utils/AsyncStorage"
+import DateTimePicker from "@react-native-community/datetimepicker"
 import { useRef, useState } from "react"
 import { Alert, Pressable, Text, TextInput, View } from "react-native"
 
@@ -17,14 +17,14 @@ export default function Modal({ setVisible }: ModalProps) {
   const [date, setDate] = useState<Date>(new Date(new Date()))
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false)
   const [showTimePicker, setShowTimePicker] = useState<boolean>(false)
-  const [pickerMode, setPickerMode] = useState<'date' | 'time'>('date')
+  const [pickerMode, setPickerMode] = useState<"date" | "time">("date")
 
   const handleSubmit = async () => {
-    if(name === ""){
+    if (name === "") {
       Alert.alert("Title cannot be empty!")
-      return;
+      return
     }
-    const data : Todo = {
+    const data: Todo = {
       id: name + date.toString(),
       name,
       info,
@@ -32,27 +32,26 @@ export default function Modal({ setVisible }: ModalProps) {
       updatedAt: new Date(),
       finishBy: new Date(date),
       completedAt: null,
-      status: false
+      status: false,
     }
     const res = await storeTodo(data)
-    if(res === "error"){
+    if (res === "error") {
       Alert.alert("Error ocurred while saving")
-    }
-    else setVisible(false)
-    return;
+    } else setVisible(false)
+    return
   }
 
   const onDateChange = (event: any, selectedDate?: Date) => {
     setShowDatePicker(false)
     setShowTimePicker(false)
-    if (event.type === 'set' && selectedDate) {
-      if (pickerMode === 'date') {
+    if (event.type === "set" && selectedDate) {
+      if (pickerMode === "date") {
         const newDate = new Date()
         newDate.setFullYear(selectedDate.getFullYear())
         newDate.setMonth(selectedDate.getMonth())
         newDate.setDate(selectedDate.getDate())
         setDate(newDate)
-      } else if (pickerMode === 'time') {
+      } else if (pickerMode === "time") {
         const newDate = new Date()
         newDate.setHours(selectedDate.getHours())
         newDate.setMinutes(selectedDate.getMinutes())
@@ -62,27 +61,27 @@ export default function Modal({ setVisible }: ModalProps) {
   }
 
   const showDatePickerModal = () => {
-    setPickerMode('date')
+    setPickerMode("date")
     setShowDatePicker(true)
   }
 
   const showTimePickerModal = () => {
-    setPickerMode('time')
+    setPickerMode("time")
     setShowTimePicker(true)
   }
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     })
   }
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
+    return date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
     })
   }
 
@@ -163,12 +162,18 @@ export default function Modal({ setVisible }: ModalProps) {
           }}
         >
           <Text style={style.inputLabel}>Date & Time</Text>
-          <Pressable style={style.dateDisplayContainer} onPressOut={showDatePickerModal}>
+          <Pressable
+            style={style.dateDisplayContainer}
+            onPressOut={showDatePickerModal}
+          >
             <Text style={style.dateLabel}>Date:</Text>
             <Text style={style.dateValue}>{formatDate(date)}</Text>
           </Pressable>
-          
-          <Pressable style={style.dateDisplayContainer} onPressOut={showTimePickerModal}>
+
+          <Pressable
+            style={style.dateDisplayContainer}
+            onPressOut={showTimePickerModal}
+          >
             <Text style={style.dateLabel}>Time:</Text>
             <Text style={style.dateValue}>{formatTime(date)}</Text>
           </Pressable>
@@ -194,12 +199,8 @@ export default function Modal({ setVisible }: ModalProps) {
           )}
         </View>
 
-        <Pressable
-          style={style.submitButton}
-          onPress={handleSubmit}
-        >
+        <Pressable style={style.submitButton} onPress={handleSubmit}>
           <Text style={style.submitButtonText}>Submit</Text>
-          
         </Pressable>
       </Pressable>
     </Pressable>

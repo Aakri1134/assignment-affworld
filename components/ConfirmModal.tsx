@@ -36,26 +36,45 @@ const ConfirmModal = ({
           display: "flex",
           justifyContent: "space-between",
           padding: 15,
-          marginBottom: 40
+          marginBottom: 40,
         }}
       >
         <Text
-        style={{
+          style={{
             fontSize: 20,
-            fontWeight: "500"
-        }}
-        >{message}</Text>
-        <View style={{
+            fontWeight: "500",
+          }}
+        >
+          {message}
+        </Text>
+        <View
+          style={{
             display: "flex",
             flexDirection: "row",
             justifyContent: "flex-end",
-            gap: 25
-        }}>
-        <Pressable onPressIn={()=>{setVisible(false)}} style={{}}><Text
-        style={{fontWeight: "600", fontSize: 17, padding: 15}}
-        >Cancel</Text></Pressable>
-        <Pressable onPressIn={()=>{setVisible(false); callback()}}><Text
-        style={{fontWeight: "600", fontSize: 17, padding: 15}}>Confirm</Text></Pressable>
+            gap: 25,
+          }}
+        >
+          <Pressable
+            onPressIn={() => {
+              setVisible(false)
+            }}
+            style={{}}
+          >
+            <Text style={{ fontWeight: "600", fontSize: 17, padding: 15 }}>
+              Cancel
+            </Text>
+          </Pressable>
+          <Pressable
+            onPressIn={() => {
+              setVisible(false)
+              callback()
+            }}
+          >
+            <Text style={{ fontWeight: "600", fontSize: 17, padding: 15 }}>
+              Confirm
+            </Text>
+          </Pressable>
         </View>
       </Pressable>
     </Pressable>
