@@ -18,6 +18,7 @@ export default function Modal({ setVisible }: ModalProps) {
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false)
   const [showTimePicker, setShowTimePicker] = useState<boolean>(false)
   const [pickerMode, setPickerMode] = useState<"date" | "time">("date")
+  const [priority, setPriority] = useState<"high" | "medium" | "low">("low")
 
   const handleSubmit = async () => {
     if (name === "") {
@@ -33,6 +34,7 @@ export default function Modal({ setVisible }: ModalProps) {
       finishBy: new Date(date),
       completedAt: null,
       status: false,
+      priority,
     }
     const res = await storeTodo(data)
     if (res === "error") {
@@ -161,7 +163,7 @@ export default function Modal({ setVisible }: ModalProps) {
             gap: 10,
           }}
         >
-          <Text style={style.inputLabel}>Date & Time</Text>
+          <Text style={style.inputLabel}>Complete By:</Text>
           <Pressable
             style={style.dateDisplayContainer}
             onPressOut={showDatePickerModal}
@@ -199,6 +201,63 @@ export default function Modal({ setVisible }: ModalProps) {
           )}
         </View>
 
+        <View>
+          <Text style={style.inputLabel}>Priority</Text>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Pressable
+              style={{
+                backgroundColor: "rgb(193, 0, 0)",
+                borderRadius: 20,
+                padding: 10,
+                borderWidth: 2,
+                borderColor: priority === "high" ? "#000" : "rgb(193, 0, 0)",
+                elevation: 3,
+              }}
+              onPress={() => {
+                setPriority("high")
+              }}
+            >
+              <Text style={{ color: "#fff", fontWeight: "600" }}>High</Text>
+            </Pressable>
+            <Pressable
+              style={{
+                backgroundColor: "rgb(222, 229, 0)",
+                borderRadius: 20,
+                padding: 10,
+                borderWidth: 2,
+                borderColor:
+                  priority === "medium" ? "#000" : "rgb(222, 229, 0)",
+                elevation: 3,
+              }}
+              onPress={() => {
+                setPriority("medium")
+              }}
+            >
+              <Text style={{ color: "#fff", fontWeight: "600" }}>Medium</Text>
+            </Pressable>
+            <Pressable
+              style={{
+                backgroundColor: "rgb(17, 173, 0)",
+                borderRadius: 20,
+                padding: 10,
+                borderWidth: 2,
+                borderColor: priority === "low" ? "#000" : "rgb(17, 173, 0)",
+                elevation: 3,
+              }}
+              onPress={() => {
+                setPriority("low")
+              }}
+            >
+              <Text style={{ color: "#fff", fontWeight: "600" }}>Low</Text>
+            </Pressable>
+          </View>
+        </View>
         <Pressable style={style.submitButton} onPress={handleSubmit}>
           <Text style={style.submitButtonText}>Submit</Text>
         </Pressable>

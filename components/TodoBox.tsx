@@ -66,15 +66,24 @@ const TodoBox = ({
         style={{
           flex: 1,
           flexDirection: "row",
-          alignItems: "center",
+          alignItems: "stretch",
           gap: 10,
         }}
       >
-        {status ? (
-          <Ionicons name="checkbox" size={24} color="rgb(42, 181, 4)" />
-        ) : (
-          <Ionicons name="checkbox-outline" size={24} color="black" />
-        )}
+        <View
+          style={{
+            display: "flex",
+            alignItems: "stretch",
+            justifyContent: "center",
+            gap: 10,
+          }}
+        >
+          {status ? (
+            <Ionicons name="checkbox" size={24} color="rgb(42, 181, 4)" />
+          ) : (
+            <Ionicons name="checkbox-outline" size={24} color="black" />
+          )}
+        </View>
         <View
           style={{
             flex: 1,
@@ -88,9 +97,24 @@ const TodoBox = ({
               textDecorationLine: todo.status ? "line-through" : "none",
             }}
           >
-            {todo.name}
+            <Text
+              style={{
+                backgroundColor:
+                  todo.priority === "high"
+                    ? "rgb(193, 0, 0)"
+                    : todo.priority === "medium"
+                    ? "rgb(222, 229, 0)"
+                    : "rgb(17, 173, 0)",
+                color: "#fff",
+                borderColor: "#000",
+              }}
+            >
+              {" "}{todo.priority.toLocaleUpperCase()}{" "}
+            </Text>{" "}{todo.name}
+            
           </Text>
-          {!todo.status && (
+
+          {!todo.status && todo.info && (
             <Text
               style={{
                 fontSize: 13,

@@ -14,6 +14,7 @@ export type Todo = {
   finishBy: Date
   completedAt: Date | null
   status: boolean
+  priority: "high" | "medium" | "low"
 }
 
 export default function Index() {
@@ -73,26 +74,30 @@ export default function Index() {
       >
         {todo && todo.length > 0 ? (
           [
-            ...todo
-              .filter((e: Todo) => !e.status)
-              .map((e: Todo) => (
-                <TodoBox
-                  todo={e}
-                  key={e.id}
-                  refresh={refresh}
-                  isScrolling={isScrolling}
-                />
-              )),
-            ...todo
-              .filter((e: Todo) => e.status)
-              .map((e: Todo) => (
-                <TodoBox
-                  todo={e}
-                  key={e.id}
-                  refresh={refresh}
-                  isScrolling={isScrolling}
-                />
-              )),
+            ...["high", "medium", "low"].map((priority) =>
+              todo
+                .filter((e: Todo) => !e.status && e.priority === priority)
+                .map((e: Todo) => (
+                  <TodoBox
+                    todo={e}
+                    key={e.id}
+                    refresh={refresh}
+                    isScrolling={isScrolling}
+                  />
+                ))
+            ),
+            ...["high", "medium", "low"].map((priority) =>
+              todo
+                .filter((e: Todo) => e.status && e.priority === priority)
+                .map((e: Todo) => (
+                  <TodoBox
+                    todo={e}
+                    key={e.id}
+                    refresh={refresh}
+                    isScrolling={isScrolling}
+                  />
+                ))
+            ),
           ]
         ) : (
           <Text>No Todos Found</Text>

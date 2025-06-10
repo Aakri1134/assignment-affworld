@@ -18,6 +18,7 @@ const Edit = () => {
   const [pickerMode, setPickerMode] = useState<"date" | "time">("date")
   const [updateModal, setUpdateModal] = useState<boolean>(false)
   const [deleteModal, setDeleteModal] = useState<boolean>(false)
+  const [priority, setPriority] = useState<"high" | "medium" | "low">("low")
 
   const handleSave = async () => {
     if (!deleteModal) setUpdateModal(true)
@@ -33,6 +34,7 @@ const Edit = () => {
       finishBy: date,
       completedAt: todo ? todo.completedAt : null,
       status: todo ? todo.status : false,
+      priority: todo ? todo.priority : "low",
     })
     router.dismiss()
   }
@@ -54,6 +56,7 @@ const Edit = () => {
     setName(todo?.name ?? "")
     setInfo(todo?.info ?? "")
     setDate(todo?.finishBy ?? new Date())
+    setPriority(todo?.priority ?? "low")
   }, [todo])
 
   useEffect(() => {
@@ -126,6 +129,9 @@ const Edit = () => {
           style={{
             flex: 1,
             padding: 10,
+            gap: 10,
+            justifyContent: "space-between",
+            paddingBottom: 40
           }}
         >
           {updateModal && (
@@ -142,7 +148,17 @@ const Edit = () => {
               setVisible={setDeleteModal}
             />
           )}
-          <View>
+          <View
+          style={{
+            display: "flex",
+            gap: 10
+          }}>
+          <View
+            style={{
+              display: "flex",
+              gap: 5,
+            }}
+          >
             <Text style={style.inputLabel}>Title:</Text>
             <TextInput
               style={{
@@ -160,7 +176,12 @@ const Edit = () => {
               onChangeText={setName}
             />
           </View>
-          <View>
+          <View
+            style={{
+              display: "flex",
+              gap: 5,
+            }}
+          >
             <Text style={style.inputLabel}>Description:</Text>
             <TextInput
               placeholder={todo.info}
@@ -186,7 +207,6 @@ const Edit = () => {
             />
           </View>
           <View>
-            <Text></Text>
             <View
               style={{
                 display: "flex",
@@ -230,6 +250,65 @@ const Edit = () => {
                 />
               )}
             </View>
+          </View>
+          <View>
+              <Text style={style.inputLabel}>Priority:</Text>
+                        <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Pressable
+              style={{
+                backgroundColor: "rgb(193, 0, 0)",
+                borderRadius: 20,
+                padding: 10,
+                borderWidth: 2,
+                borderColor: priority === "high" ? "#000" : "rgb(193, 0, 0)",
+                elevation: 3,
+              }}
+              onPress={() => {
+                setPriority("high")
+              }}
+            >
+              <Text style={{ color: "#fff", fontWeight: "600" }}>High</Text>
+            </Pressable>
+            <Pressable
+              style={{
+                backgroundColor: "rgb(222, 229, 0)",
+                borderRadius: 20,
+                padding: 10,
+                borderWidth: 2,
+                borderColor:
+                  priority === "medium" ? "#000" : "rgb(222, 229, 0)",
+                elevation: 3,
+              }}
+              onPress={() => {
+                setPriority("medium")
+              }}
+            >
+              <Text style={{ color: "#fff", fontWeight: "600" }}>Medium</Text>
+            </Pressable>
+            <Pressable
+              style={{
+                backgroundColor: "rgb(17, 173, 0)",
+                borderRadius: 20,
+                padding: 10,
+                borderWidth: 2,
+                borderColor: priority === "low" ? "#000" : "rgb(17, 173, 0)",
+                elevation: 3,
+              }}
+              onPress={() => {
+                setPriority("low")
+              }}
+            >
+              <Text style={{ color: "#fff", fontWeight: "600" }}>Low</Text>
+            </Pressable>
+          </View>
+            
+          </View>
           </View>
           <Pressable style={style.submitButton} onPress={handleSave}>
             <Text style={style.submitButtonText}>Save Changes</Text>
