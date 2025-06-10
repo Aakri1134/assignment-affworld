@@ -9,9 +9,11 @@ import { useRouter } from "expo-router"
 const TodoBox = ({
   todo,
   refresh,
+  isScrolling
 }: {
   todo: Todo
   refresh: () => Promise<void>
+  isScrolling: boolean
 }) => {
   const [status, setStatus] = useState<boolean>(todo.status)
 
@@ -23,6 +25,7 @@ const TodoBox = ({
       const id = todo.id
       toggleTask(id)
       setStatus((x) => !x)
+      refresh()
     }
     isLongPressing.current = false
   }
@@ -34,7 +37,8 @@ const TodoBox = ({
 
   return (
     <Pressable
-      onPressOut={handlePress}
+    disabled={isScrolling}
+      onPress={handlePress}
       onLongPress={handleUpdate}
       style={{
         display: "flex",
@@ -45,7 +49,7 @@ const TodoBox = ({
         margin: 8,
         // borderWidth : 1,
         borderRadius: 10,
-        height: 80,
+        minHeight: 100,
         padding: 10,
 
         // android shadow
@@ -60,37 +64,51 @@ const TodoBox = ({
     >
       <View
         style={{
-          display: "flex",
+          flex: 1,
           flexDirection: "row",
           alignItems: "center",
           gap: 10,
         }}
       >
         {status ? (
-          <Ionicons name="checkbox" size={24} color="black" />
+          <Ionicons name="checkbox" size={24} color="rgb(42, 181, 4)" />
         ) : (
           <Ionicons name="checkbox-outline" size={24} color="black" />
         )}
-        <View>
+        <View
+          style={{
+            flex: 1,
+          }}
+        >
           <Text
             style={{
               fontWeight: "700",
               fontSize: 18,
               color: "rgb(41, 41, 41)",
+              textDecorationLine: todo.status ? 'line-through' : "none"
             }}
           >
             {todo.name}
           </Text>
-          <Text
+          {!todo.status && <Text
+            style={{
+              fontSize: 13,
+              color: "rgb(97, 97, 97)",
+            }}
+          >
+            {todo.info.length > 30
+              ? todo.info.substring(0, 30) + "..."
+              : todo.info}
+          </Text>}
+          {!todo.status && <Text
             style={{
               fontSize: 10,
-              paddingLeft: 5,
               color: "rgb(151, 151, 151)",
             }}
           >
             {todo.finishBy.toLocaleString("default", { timeStyle: "short" })},{" "}
             {todo.finishBy.toLocaleString("default", { dateStyle: "long" })}
-          </Text>
+          </Text>}
         </View>
       </View>
       <Pressable
@@ -99,9 +117,8 @@ const TodoBox = ({
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: "#ddd",
         }}
-        onPressOut={handleUpdate}
+        onPress={handleUpdate}
       >
         <FontAwesome6 name="edit" size={18} color="black" />
       </Pressable>

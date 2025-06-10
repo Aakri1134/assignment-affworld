@@ -75,3 +75,18 @@ export async function dev_PRINT_DATA() {
     console.log(e)
   }
 }
+
+export async function getTodoID(id: string) {
+    const res = cachedData.find((todo: Todo)=>{
+        return todo.id === id
+    })
+    return res
+}
+
+export async function updateTodoID(id: string, newTodo: Todo) {
+    const index = cachedData.findIndex((todo: Todo) => todo.id === id)
+    if (index !== -1) {
+        cachedData[index] = newTodo
+        await AsyncStorage.setItem(key, JSON.stringify(cachedData))
+    }
+}

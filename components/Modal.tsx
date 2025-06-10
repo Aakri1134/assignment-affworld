@@ -4,7 +4,6 @@ import DateTimePicker from '@react-native-community/datetimepicker'
 import { useRef, useState } from "react"
 import { Alert, Pressable, Text, TextInput, View } from "react-native"
 
-
 type ModalProps = {
   setVisible: React.Dispatch<React.SetStateAction<boolean>>
 }
@@ -15,7 +14,7 @@ export default function Modal({ setVisible }: ModalProps) {
 
   const [name, setName] = useState<string>("")
   const [info, setInfo] = useState<string>("")
-  const [date, setDate] = useState<Date>(new Date())
+  const [date, setDate] = useState<Date>(new Date(new Date()))
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false)
   const [showTimePicker, setShowTimePicker] = useState<boolean>(false)
   const [pickerMode, setPickerMode] = useState<'date' | 'time'>('date')
@@ -25,14 +24,10 @@ export default function Modal({ setVisible }: ModalProps) {
       Alert.alert("Title cannot be empty!")
       return;
     }
-    if(date < new Date(Number(new Date()) - 10*60*1000)){
-      Alert.alert("Invalid Date")
-      return;
-    }
     const data : Todo = {
       id: name + date.toString(),
       name,
-      info : info.trim(),
+      info,
       createdAt: new Date(),
       updatedAt: new Date(),
       finishBy: new Date(date),
@@ -52,13 +47,13 @@ export default function Modal({ setVisible }: ModalProps) {
     setShowTimePicker(false)
     if (event.type === 'set' && selectedDate) {
       if (pickerMode === 'date') {
-        const newDate = new Date(date)
+        const newDate = new Date()
         newDate.setFullYear(selectedDate.getFullYear())
         newDate.setMonth(selectedDate.getMonth())
         newDate.setDate(selectedDate.getDate())
         setDate(newDate)
       } else if (pickerMode === 'time') {
-        const newDate = new Date(date)
+        const newDate = new Date()
         newDate.setHours(selectedDate.getHours())
         newDate.setMinutes(selectedDate.getMinutes())
         setDate(newDate)
@@ -180,17 +175,16 @@ export default function Modal({ setVisible }: ModalProps) {
 
           {showDatePicker && (
             <DateTimePicker
-              testID="datePicker"
               value={date}
               mode="date"
               display="default"
               onChange={onDateChange}
+              minimumDate={new Date()}
             />
           )}
 
           {showTimePicker && (
             <DateTimePicker
-              testID="timePicker"
               value={date}
               mode="time"
               is24Hour={true}
@@ -205,6 +199,7 @@ export default function Modal({ setVisible }: ModalProps) {
           onPress={handleSubmit}
         >
           <Text style={style.submitButtonText}>Submit</Text>
+          
         </Pressable>
       </Pressable>
     </Pressable>

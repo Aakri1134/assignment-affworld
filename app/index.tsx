@@ -1,9 +1,9 @@
-import Modal from "@/components/Modal"
-import { dev_PRINT_DATA, getTodos, initialize, toggleTask } from "@/utils/AsyncStorage"
-import { useCallback, useEffect, useState } from "react"
-import { Pressable, ScrollView, Text, View } from "react-native"
+import Modal from "@/components/Modal";
 import TodoBox from "@/components/TodoBox";
-import { useFocusEffect } from "expo-router";
+import { getTodos, initialize } from "@/utils/AsyncStorage";
+import { usePathname } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
+import { Pressable, ScrollView, Text, View } from "react-native";
 
 export type Todo = {
   id: string
@@ -19,6 +19,9 @@ export type Todo = {
 export default function Index() {
   const [todo, setTodo] = useState<Todo[]>([])
   const [visible, setVisible] = useState<boolean>(false)
+  const [isScrolling, setIsScrolling] = useState<boolean>(false)
+
+  const pathname = usePathname()
 
   const fetchData = useCallback(async () => {
     try {
@@ -31,11 +34,7 @@ export default function Index() {
 
   useEffect(() => {
     refresh()
-  }, [])
-
-  useFocusEffect(() => {
-    refresh()
-  })
+  }, [pathname])
 
   const refresh =useCallback( async () => {
     await initialize()
@@ -57,17 +56,23 @@ export default function Index() {
     >
       {visible && <Modal setVisible={setVisible} />}
         <ScrollView
+        onScrollBeginDrag={()=>{setIsScrolling(true)}}
+        onScrollEndDrag={()=>{setIsScrolling(false)}}
+        onMomentumScrollEnd={()=>{setIsScrolling(false)}}
         style={{
           display: "flex",
           flexDirection: "column",
           gap: 10
         }}>
           {todo && todo.length > 0 ? (
-            todo.map((e: Todo) => {
-              return (
-                <TodoBox todo={e} key={e.id} refresh={refresh}/>
-              )
-            })
+            [
+              ...todo.filter((e: Todo) => !e.status).map((e: Todo) => (
+                <TodoBox todo={e} key={e.id} refresh={refresh} isScrolling={isScrolling}/>
+              )),
+              ...todo.filter((e: Todo) => e.status).map((e: Todo) => (
+                <TodoBox todo={e} key={e.id} refresh={refresh} isScrolling={isScrolling}/>
+              ))
+            ]
           ) : (
             <Text>No Todos Found</Text>
           )}
