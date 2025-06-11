@@ -1,10 +1,12 @@
 import { Todo } from "@/app"
 import { toggleTask } from "@/utils/AsyncStorage"
+import { scheduleTodoNotification } from "@/utils/NotificationHandler"
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6"
 import Ionicons from "@expo/vector-icons/Ionicons"
+import { cancelScheduledNotificationAsync } from "expo-notifications"
+import { useRouter } from "expo-router"
 import { useRef, useState } from "react"
 import { Pressable, Text, View } from "react-native"
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6"
-import { useRouter } from "expo-router"
 
 const TodoBox = ({
   todo,
@@ -24,6 +26,12 @@ const TodoBox = ({
     if (!isLongPressing.current) {
       const id = todo.id
       toggleTask(id)
+      if (todo.status && todo.notificationId) {
+        cancelScheduledNotificationAsync(todo.notificationId)
+      }
+      if (!todo.status && todo.notificationId) {
+        scheduleTodoNotification({finishBy: todo.finishBy, name: todo.name})
+      }
       setStatus((x) => !x)
       refresh()
     }
@@ -91,8 +99,8 @@ const TodoBox = ({
         >
           <Text
             style={{
-              fontWeight: "700",
-              fontSize: 18,
+              fontWeight: "600",
+              fontSize: 17,
               color: "rgb(41, 41, 41)",
               textDecorationLine: todo.status ? "line-through" : "none",
             }}
@@ -103,15 +111,17 @@ const TodoBox = ({
                   todo.priority === "high"
                     ? "rgb(193, 0, 0)"
                     : todo.priority === "medium"
-                    ? "rgb(222, 229, 0)"
-                    : "rgb(17, 173, 0)",
+                      ? "rgb(222, 229, 0)"
+                      : "rgb(17, 173, 0)",
                 color: "#fff",
                 borderColor: "#000",
+                fontSize: 14,
               }}
             >
-              {" "}{todo.priority.toLocaleUpperCase()}{" "}
-            </Text>{" "}{todo.name}
-            
+              {" "}
+              {todo.priority.toLocaleUpperCase()}{" "}
+            </Text>{" "}
+            {todo.name}
           </Text>
 
           {!todo.status && todo.info && (

@@ -1,6 +1,7 @@
 import Modal from "@/components/Modal"
 import TodoBox from "@/components/TodoBox"
 import { getTodos, initialize } from "@/utils/AsyncStorage"
+import { registerForPushNotificationAsync, scheduleTodoNotification } from "@/utils/NotificationHandler"
 import { usePathname } from "expo-router"
 import { useCallback, useEffect, useState } from "react"
 import { Pressable, ScrollView, Text, View } from "react-native"
@@ -14,7 +15,8 @@ export type Todo = {
   finishBy: Date
   completedAt: Date | null
   status: boolean
-  priority: "high" | "medium" | "low"
+  priority: "high" | "medium" | "low",
+  notificationId: string | null
 }
 
 export default function Index() {
@@ -40,6 +42,7 @@ export default function Index() {
   const refresh = useCallback(async () => {
     await initialize()
     await fetchData()
+    await registerForPushNotificationAsync()
   }, [])
 
   useEffect(() => {

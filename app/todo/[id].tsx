@@ -1,10 +1,14 @@
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router"
 import { useEffect, useState } from "react"
-import { Pressable, Text, TextInput, View } from "react-native"
+import { Alert, Pressable, Text, TextInput, View } from "react-native"
 import DateTimePicker from "@react-native-community/datetimepicker"
 import { deleteTodo, getTodoID, updateTodoID } from "@/utils/AsyncStorage"
 import { Todo } from ".."
 import ConfirmModal from "@/components/ConfirmModal"
+import {
+  cancelTodoNotification,
+  scheduleTodoNotification,
+} from "@/utils/NotificationHandler"
 
 const Edit = () => {
   const { id }: { id: string } = useLocalSearchParams()
@@ -20,11 +24,24 @@ const Edit = () => {
   const [deleteModal, setDeleteModal] = useState<boolean>(false)
   const [priority, setPriority] = useState<"high" | "medium" | "low">("low")
 
+  const navigation = useNavigation()
+  const router = useRouter()
+
   const handleSave = async () => {
-    if (!deleteModal) setUpdateModal(true)
+    if (!deleteModal && !todo?.status) setUpdateModal(true)
   }
 
   const updateData = async () => {
+    todo?.notificationId && (cancelTodoNotification(todo.notificationId))
+    const notificationId = await scheduleTodoNotification({
+      finishBy: date,
+      name: name.trim(),
+    })
+
+    if (name == "") {
+      Alert.alert("Title cannot be empty!")
+    }
+
     await updateTodoID(id as string, {
       id: id,
       name: name.trim(),
@@ -34,17 +51,18 @@ const Edit = () => {
       finishBy: date,
       completedAt: todo ? todo.completedAt : null,
       status: todo ? todo.status : false,
-      priority: todo ? todo.priority : "low",
+      priority: priority,
+      notificationId,
     })
     router.dismiss()
   }
 
-  const navigation = useNavigation()
-  const router = useRouter()
-
-  const handelDelete = () => {
-    if (!updateModal) setDeleteModal(true)
-    else return
+  const handelDelete = async () => {
+    if (!updateModal) {
+      setDeleteModal(true)
+      todo?.notificationId &&
+        (await cancelTodoNotification(todo.notificationId))
+    } else return
   }
 
   const deleteData = async () => {
@@ -98,13 +116,17 @@ const Edit = () => {
   }
 
   const showDatePickerModal = () => {
-    setPickerMode("date")
-    setShowDatePicker(true)
+    if (!todo?.status) {
+      setPickerMode("date")
+      setShowDatePicker(true)
+    }
   }
 
   const showTimePickerModal = () => {
-    setPickerMode("time")
-    setShowTimePicker(true)
+    if (!todo?.status) {
+      setPickerMode("time")
+      setShowTimePicker(true)
+    }
   }
 
   const formatDate = (date: Date) => {
@@ -131,7 +153,7 @@ const Edit = () => {
             padding: 10,
             gap: 10,
             justifyContent: "space-between",
-            paddingBottom: 40
+            paddingBottom: 40,
           }}
         >
           {updateModal && (
@@ -149,168 +171,180 @@ const Edit = () => {
             />
           )}
           <View
-          style={{
-            display: "flex",
-            gap: 10
-          }}>
-          <View
             style={{
               display: "flex",
-              gap: 5,
+              gap: 10,
             }}
           >
-            <Text style={style.inputLabel}>Title:</Text>
-            <TextInput
-              style={{
-                backgroundColor: "#fff",
-                borderRadius: 10,
-                elevation: 3,
-                // iOS shadow
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.15,
-                shadowRadius: 4,
-              }}
-              placeholder={todo.name}
-              value={name}
-              onChangeText={setName}
-            />
-          </View>
-          <View
-            style={{
-              display: "flex",
-              gap: 5,
-            }}
-          >
-            <Text style={style.inputLabel}>Description:</Text>
-            <TextInput
-              placeholder={todo.info}
-              style={{
-                backgroundColor: "#fff",
-                borderRadius: 10,
-                elevation: 3,
-                height: 100,
-                paddingTop: 10,
-                paddingBottom: 10,
-                // iOS shadow
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.15,
-                shadowRadius: 4,
-              }}
-              multiline
-              numberOfLines={4}
-              textAlignVertical="top"
-              returnKeyType="done"
-              value={info}
-              onChangeText={setInfo}
-            />
-          </View>
-          <View>
             <View
               style={{
                 display: "flex",
-                gap: 10,
+                gap: 5,
               }}
             >
-              <Text style={style.inputLabel}>Complete By:</Text>
-              <Pressable
-                style={style.dateDisplayContainer}
-                onPressOut={showDatePickerModal}
+              <Text style={style.inputLabel}>Title:</Text>
+              <TextInput
+                style={{
+                  backgroundColor: "#fff",
+                  borderRadius: 10,
+                  elevation: 3,
+                  // iOS shadow
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.15,
+                  shadowRadius: 4,
+                }}
+                placeholder={todo.name}
+                value={name}
+                onChangeText={setName}
+                editable={!todo?.status}
+              />
+            </View>
+            <View
+              style={{
+                display: "flex",
+                gap: 5,
+              }}
+            >
+              <Text style={style.inputLabel}>Description:</Text>
+              <TextInput
+                placeholder={todo.info}
+                style={{
+                  backgroundColor: "#fff",
+                  borderRadius: 10,
+                  elevation: 3,
+                  height: 100,
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  // iOS shadow
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.15,
+                  shadowRadius: 4,
+                }}
+                multiline
+                numberOfLines={4}
+                textAlignVertical="top"
+                returnKeyType="done"
+                value={info}
+                onChangeText={setInfo}
+                editable={!todo?.status}
+              />
+            </View>
+            <View>
+              <View
+                style={{
+                  display: "flex",
+                  gap: 10,
+                }}
               >
-                <Text style={style.dateLabel}>Date:</Text>
-                <Text style={style.dateValue}>{formatDate(date)}</Text>
-              </Pressable>
+                <Text style={style.inputLabel}>Complete By:</Text>
+                <Pressable
+                  style={style.dateDisplayContainer}
+                  onPressOut={showDatePickerModal}
+                >
+                  <Text style={style.dateLabel}>Date:</Text>
+                  <Text style={style.dateValue}>{formatDate(date)}</Text>
+                </Pressable>
 
-              <Pressable
-                style={style.dateDisplayContainer}
-                onPressOut={showTimePickerModal}
+                <Pressable
+                  style={style.dateDisplayContainer}
+                  onPressOut={showTimePickerModal}
+                >
+                  <Text style={style.dateLabel}>Time:</Text>
+                  <Text style={style.dateValue}>{formatTime(date)}</Text>
+                </Pressable>
+
+                {showDatePicker && (
+                  <DateTimePicker
+                    value={date}
+                    mode="date"
+                    display="default"
+                    onChange={onDateChange}
+                    minimumDate={new Date()}
+                  />
+                )}
+
+                {showTimePicker && (
+                  <DateTimePicker
+                    value={date}
+                    mode="time"
+                    is24Hour={true}
+                    display="default"
+                    onChange={onDateChange}
+                  />
+                )}
+              </View>
+            </View>
+            <View>
+              <Text style={style.inputLabel}>Priority:</Text>
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
               >
-                <Text style={style.dateLabel}>Time:</Text>
-                <Text style={style.dateValue}>{formatTime(date)}</Text>
-              </Pressable>
-
-              {showDatePicker && (
-                <DateTimePicker
-                  value={date}
-                  mode="date"
-                  display="default"
-                  onChange={onDateChange}
-                  minimumDate={new Date()}
-                />
-              )}
-
-              {showTimePicker && (
-                <DateTimePicker
-                  value={date}
-                  mode="time"
-                  is24Hour={true}
-                  display="default"
-                  onChange={onDateChange}
-                />
-              )}
+                <Pressable
+                  style={{
+                    backgroundColor: "rgb(193, 0, 0)",
+                    borderRadius: 20,
+                    padding: 10,
+                    borderWidth: 2,
+                    borderColor:
+                      priority === "high" ? "#000" : "rgb(193, 0, 0)",
+                    elevation: 3,
+                  }}
+                  onPress={() => {
+                    if (!todo?.status) setPriority("high")
+                  }}
+                >
+                  <Text style={{ color: "#fff", fontWeight: "600" }}>High</Text>
+                </Pressable>
+                <Pressable
+                  style={{
+                    backgroundColor: "rgb(222, 229, 0)",
+                    borderRadius: 20,
+                    padding: 10,
+                    borderWidth: 2,
+                    borderColor:
+                      priority === "medium" ? "#000" : "rgb(222, 229, 0)",
+                    elevation: 3,
+                  }}
+                  onPress={() => {
+                    if (!todo?.status) setPriority("medium")
+                  }}
+                >
+                  <Text style={{ color: "#fff", fontWeight: "600" }}>
+                    Medium
+                  </Text>
+                </Pressable>
+                <Pressable
+                  style={{
+                    backgroundColor: "rgb(17, 173, 0)",
+                    borderRadius: 20,
+                    padding: 10,
+                    borderWidth: 2,
+                    borderColor:
+                      priority === "low" ? "#000" : "rgb(17, 173, 0)",
+                    elevation: 3,
+                  }}
+                  onPress={() => {
+                    if (!todo?.status) setPriority("low")
+                  }}
+                >
+                  <Text style={{ color: "#fff", fontWeight: "600" }}>Low</Text>
+                </Pressable>
+              </View>
             </View>
           </View>
-          <View>
-              <Text style={style.inputLabel}>Priority:</Text>
-                        <View
+          <Pressable
             style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
+              ...style.submitButton,
+              backgroundColor: !todo?.status ? "#28a745" : "#aaa",
             }}
+            onPress={handleSave}
           >
-            <Pressable
-              style={{
-                backgroundColor: "rgb(193, 0, 0)",
-                borderRadius: 20,
-                padding: 10,
-                borderWidth: 2,
-                borderColor: priority === "high" ? "#000" : "rgb(193, 0, 0)",
-                elevation: 3,
-              }}
-              onPress={() => {
-                setPriority("high")
-              }}
-            >
-              <Text style={{ color: "#fff", fontWeight: "600" }}>High</Text>
-            </Pressable>
-            <Pressable
-              style={{
-                backgroundColor: "rgb(222, 229, 0)",
-                borderRadius: 20,
-                padding: 10,
-                borderWidth: 2,
-                borderColor:
-                  priority === "medium" ? "#000" : "rgb(222, 229, 0)",
-                elevation: 3,
-              }}
-              onPress={() => {
-                setPriority("medium")
-              }}
-            >
-              <Text style={{ color: "#fff", fontWeight: "600" }}>Medium</Text>
-            </Pressable>
-            <Pressable
-              style={{
-                backgroundColor: "rgb(17, 173, 0)",
-                borderRadius: 20,
-                padding: 10,
-                borderWidth: 2,
-                borderColor: priority === "low" ? "#000" : "rgb(17, 173, 0)",
-                elevation: 3,
-              }}
-              onPress={() => {
-                setPriority("low")
-              }}
-            >
-              <Text style={{ color: "#fff", fontWeight: "600" }}>Low</Text>
-            </Pressable>
-          </View>
-            
-          </View>
-          </View>
-          <Pressable style={style.submitButton} onPress={handleSave}>
             <Text style={style.submitButtonText}>Save Changes</Text>
           </Pressable>
         </View>

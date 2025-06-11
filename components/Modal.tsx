@@ -1,5 +1,6 @@
 import { Todo } from "@/app"
 import { storeTodo } from "@/utils/AsyncStorage"
+import { scheduleTodoNotification } from "@/utils/NotificationHandler"
 import DateTimePicker from "@react-native-community/datetimepicker"
 import { useRef, useState } from "react"
 import { Alert, Pressable, Text, TextInput, View } from "react-native"
@@ -25,6 +26,7 @@ export default function Modal({ setVisible }: ModalProps) {
       Alert.alert("Title cannot be empty!")
       return
     }
+    const notificationId = await scheduleTodoNotification({finishBy: date, name})
     const data: Todo = {
       id: name + date.toString(),
       name,
@@ -35,6 +37,7 @@ export default function Modal({ setVisible }: ModalProps) {
       completedAt: null,
       status: false,
       priority,
+      notificationId
     }
     const res = await storeTodo(data)
     if (res === "error") {
