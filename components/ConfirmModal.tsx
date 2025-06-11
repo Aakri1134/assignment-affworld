@@ -1,5 +1,10 @@
 import { Pressable, View, Text } from "react-native"
 
+/* This is a general use modal, which shows a message and gives to options, Confirm or Cancel
+Cancel - Simply hides the modal
+Confirm - hides the modal and calls the callback function sent as props
+*/
+
 const ConfirmModal = ({
   message,
   callback,

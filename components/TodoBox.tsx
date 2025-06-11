@@ -8,6 +8,8 @@ import { useRouter } from "expo-router"
 import { useRef, useState } from "react"
 import { Pressable, Text, View } from "react-native"
 
+// Wrapper component for individual todos in the Home page
+
 const TodoBox = ({
   todo,
   refresh,
@@ -22,6 +24,7 @@ const TodoBox = ({
   const isLongPressing = useRef<boolean>(false)
   const router = useRouter()
 
+  // sets the status of the Todo
   const handlePress = async () => {
     if (!isLongPressing.current) {
       const id = todo.id
@@ -30,7 +33,7 @@ const TodoBox = ({
         cancelScheduledNotificationAsync(todo.notificationId)
       }
       if (!todo.status && todo.notificationId) {
-        scheduleTodoNotification({finishBy: todo.finishBy, name: todo.name})
+        scheduleTodoNotification({ finishBy: todo.finishBy, name: todo.name })
       }
       setStatus((x) => !x)
       refresh()
@@ -38,6 +41,7 @@ const TodoBox = ({
     isLongPressing.current = false
   }
 
+  // opens the Update page on long press
   const handleUpdate = async (e: any) => {
     router.push({ pathname: "/todo/[id]", params: { id: todo.id } })
     isLongPressing.current = true

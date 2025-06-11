@@ -31,17 +31,21 @@ const Edit = () => {
     if (!deleteModal && !todo?.status) setUpdateModal(true)
   }
 
+  // callback function passed to Confirmation modal, to handle updation of existing Task
   const updateData = async () => {
-    todo?.notificationId && (cancelTodoNotification(todo.notificationId))
+    // To prevent empty title
+    if (name == "") {
+      Alert.alert("Title cannot be empty!")
+    }
+
+    // cancels existing Notification and sets a new Notification for the updated time
+    todo?.notificationId && cancelTodoNotification(todo.notificationId)
     const notificationId = await scheduleTodoNotification({
       finishBy: date,
       name: name.trim(),
     })
 
-    if (name == "") {
-      Alert.alert("Title cannot be empty!")
-    }
-
+    // Save Updated Todo by calling function in AsyncStorage.ts
     await updateTodoID(id as string, {
       id: id,
       name: name.trim(),
@@ -54,9 +58,12 @@ const Edit = () => {
       priority: priority,
       notificationId,
     })
+
+    // to move back to previous page as update is completed
     router.dismiss()
   }
 
+  // Function to handle click on the Delete button present on the header
   const handelDelete = async () => {
     if (!updateModal) {
       setDeleteModal(true)
@@ -65,11 +72,13 @@ const Edit = () => {
     } else return
   }
 
+  // callback function sent to Confirmation modal to continue with the deletion
   const deleteData = async () => {
     deleteTodo(id as string)
     router.dismiss()
   }
 
+  // To initialize the data once Todo is updated, as the updation of Todo is async
   useEffect(() => {
     setName(todo?.name ?? "")
     setInfo(todo?.info ?? "")
@@ -77,6 +86,7 @@ const Edit = () => {
     setPriority(todo?.priority ?? "low")
   }, [todo])
 
+  // For setting the delete button in the header, and updating Todo
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -91,11 +101,13 @@ const Edit = () => {
     fetchTodo()
   }, [])
 
+  // fetched Todo using the functions present in utils/AsyncStorage.ts
   const fetchTodo = async () => {
     const data = await getTodoID(id as string)
     setTodo(data)
   }
 
+  // To handel the Date Time picker
   const onDateChange = (event: any, selectedDate?: Date) => {
     setShowDatePicker(false)
     setShowTimePicker(false)

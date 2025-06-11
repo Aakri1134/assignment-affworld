@@ -5,6 +5,9 @@ import DateTimePicker from "@react-native-community/datetimepicker"
 import { useRef, useState } from "react"
 import { Alert, Pressable, Text, TextInput, View } from "react-native"
 
+// This is the modal that appears on pressing + button
+// It is used to create a new todo
+
 type ModalProps = {
   setVisible: React.Dispatch<React.SetStateAction<boolean>>
 }
@@ -21,12 +24,16 @@ export default function Modal({ setVisible }: ModalProps) {
   const [pickerMode, setPickerMode] = useState<"date" | "time">("date")
   const [priority, setPriority] = useState<"high" | "medium" | "low">("low")
 
+  // handles the submission for creation of new Todo when the button is clicked
   const handleSubmit = async () => {
     if (name === "") {
       Alert.alert("Title cannot be empty!")
       return
     }
-    const notificationId = await scheduleTodoNotification({finishBy: date, name})
+    const notificationId = await scheduleTodoNotification({
+      finishBy: date,
+      name,
+    })
     const data: Todo = {
       id: name + date.toString(),
       name,
@@ -37,7 +44,7 @@ export default function Modal({ setVisible }: ModalProps) {
       completedAt: null,
       status: false,
       priority,
-      notificationId
+      notificationId,
     }
     const res = await storeTodo(data)
     if (res === "error") {
@@ -46,6 +53,7 @@ export default function Modal({ setVisible }: ModalProps) {
     return
   }
 
+  // handles the date and time picker
   const onDateChange = (event: any, selectedDate?: Date) => {
     setShowDatePicker(false)
     setShowTimePicker(false)

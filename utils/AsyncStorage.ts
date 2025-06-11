@@ -3,8 +3,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 
 const key = "Todo"
 
+// to allow for faster data access compared to AsyncStorage
+// All data is updated in cached memory, and stored asynchronously to the AsyncStorage, to reduce wait time
 let cachedData: Todo[] = []
 
+// Function to store new Todd
 export async function storeTodo(todo: Todo) {
   try {
     cachedData = [...cachedData, todo]
@@ -14,6 +17,7 @@ export async function storeTodo(todo: Todo) {
   }
 }
 
+// funtion to delete existing todo
 export function deleteTodo(id: string) {
   try {
     const res = cachedData.filter((todo: Todo) => {
@@ -29,10 +33,12 @@ export function deleteTodo(id: string) {
   }
 }
 
+// function to get all todos
 export async function getTodos() {
   return cachedData
 }
 
+// function updates the cached memory to the memory present in the AsyncStorage
 export async function initialize() {
   try {
     const data = await AsyncStorage.getItem(key)
@@ -52,6 +58,7 @@ export async function initialize() {
   }
 }
 
+// to update the status change of task
 export async function toggleTask(id: string) {
   try {
     cachedData.map((todo) => {
@@ -65,17 +72,19 @@ export async function toggleTask(id: string) {
   }
 }
 
-export async function dev_PRINT_DATA() {
-  try {
-    const data = JSON.parse((await AsyncStorage.getItem(key)) || "[]")
-    console.log(data)
-    console.log(cachedData)
-    console.log(JSON.stringify(data) === JSON.stringify(cachedData))
-  } catch (e) {
-    console.log(e)
-  }
-}
+// A function made by me to test the data while development
+// export async function dev_PRINT_DATA() {
+//   try {
+//     const data = JSON.parse((await AsyncStorage.getItem(key)) || "[]")
+//     console.log(data)
+//     console.log(cachedData)
+//     console.log(JSON.stringify(data) === JSON.stringify(cachedData))
+//   } catch (e) {
+//     console.log(e)
+//   }
+// }
 
+// function to get Todo by ID
 export async function getTodoID(id: string) {
   const res = cachedData.find((todo: Todo) => {
     return todo.id === id
@@ -83,6 +92,7 @@ export async function getTodoID(id: string) {
   return res
 }
 
+// to update the data in a todo using the ID
 export async function updateTodoID(id: string, newTodo: Todo) {
   const index = cachedData.findIndex((todo: Todo) => todo.id === id)
   if (index !== -1) {
