@@ -1,50 +1,62 @@
-# Welcome to your Expo app 👋
+# My Tasks: Todo App using React Native with expo CLI
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Overview
 
-## Get started
+This app was prepared as an assignment for AffWorld LLC as part of the React Native Development Internship. The app helps you add, edit, and delete todos, keeping your tasks organized. As per the requirements I have used Expo Notifications to send Notification reminders to the users, 5 minutes before the Completion time of the task.
 
-1. Install dependencies
+I have also implemented the following bonus features:-
 
-   ```bash
-   npm install
-   ```
+- I have made a Task Edit Screen, which can be accessed using a dedicated button next to each task, or by long pressing the tasks.
+- I have used AsyncStorage to locally save the data so that the data persists between sessions.
+- I have added a prioritization feature, where the priority of a task can be set, which is accordingly displayed using the UI.
+- I have made sure that notifications are properly handled in case of task completions and edits.
 
-2. Start the app
+## Instructions
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+To run the app locally, clone the repository using the command,
 
 ```bash
-npm run reset-project
+git clone https://github.com/Aakri1134/assignment-affworld
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Run the following commands to install dependencies,
 
-## Learn more
+```
+npm install
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+Run the following command to run the app using Expo Go,
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```
+npx expo start
+```
 
-## Join the community
+Run the following code to run the app on Android or iOS `(necessary for notifications, as Expo Go does not support Notifications)`.
 
-Join our community of developers creating universal apps.
+for Android,
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```
+npx expo run:android
+```
+
+for iOS,
+
+```
+npx expo run:ios
+```
+
+**Remember to add SDK location for Android development build, at `android/local.properties`**
+
+## UX enhancement features
+
+- Dedicated modals for update and delete confirmation.
+- Delete present inside the Update page to prevent accidental deletes
+- Separate modal for adding inputs, implemented to make the design more simplistic and intuitive.
+
+## Challenges faced
+
+- **Testing :**
+ Having upgraded to a newer system, I had to reinstall required SDKs, especially because Expo Go does not support Notifications, meaning I would require a development build for testing.
+
+- **Notifications :**
+ It was my first time using Expo notifications, so I had to look up the docs to properly use it in my project.
